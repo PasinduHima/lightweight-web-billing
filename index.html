@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing System</title>
+    <script src="script.js" defer></script>
+    <style>
+        label{
+            display: inline-block;
+            width: 100px;
+        }  
+
+        table{
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        form input{
+            width: 280px;
+            margin-top: 10px;
+            padding: 5px;
+        }
+
+        form input[type="submit"]{
+            margin-left: 110px;
+            margin-top: 10px;
+            padding: 5px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        table, th, td{
+            border: 1px solid black;
+        }
+
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: aquamarine;;
+        }
+        h1{
+            text-align: center;
+            color: red;
+        }
+        .act-btn{
+            margin: 20px;
+            padding: 5px;
+            background-color: green;
+            color: white;
+        }
+        .delete{
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+        }
+        
+    </style>
+    
+</head>
+<body>
+    <h1>Billing System</h1>
+    <form action="index.php" method="post">
+        <label for="item">Item</label>
+        <input type="text" name="item" id="item">
+        <br>
+        <label for="price">Price</label>
+        <input type="number" name="price" id="price">
+        <br>
+        <label for="quantity">Quantity</label>
+        <input type="number" name="quantity" id="quantity">
+        <br>
+        <input type="submit" value="Add">
+    </form>
+    <Table>
+        <thead>
+            <tr>
+                <th>#
+                    <button id="reverse">↕</button>
+                </th>
+                <th>
+                    Item 
+                    <button id="sortByName">↓</button>
+                </th>
+                <th>
+                    Rate
+                    <button id="sortByRate">↓</button>
+                </th>
+                <th>
+                    Quantity
+                    <button id="sortByQuantity">↓</button>
+                </th>
+                <th>
+                    Total
+                    <button id="sortByTotal">↓</button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Number of item types: <span id="itemTypes"></span> </td>
+                <td>Total</td>
+                <td class="grandTotal"></td>
+            </tr>
+        </tfoot>
+    </Table>
+    <template>
+        <tr>
+            <td >
+                <span class="count"></span>
+                <button class="delete">X</button>
+                <button class="edit">Edit</button>
+            </td>
+            <td class="name"></td>
+            <td class="rate"></td>
+            <td class="qty"></td>
+            <td class="total"></td>
+        </tr>
+    </template>
+    <button id="printBtn" class="act-btn">Print</button>
+    <button id="clearBtn" class="act-btn">Clear</button>
+   
+    
+</body>
+</html>
