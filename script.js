@@ -1,66 +1,74 @@
 let records = [];
-let items = localStorage.getItem('items');
+let items = localStorage.getItem("items");
 if (!items) {
   items = [];
-  }
-else{
+} else {
   items = JSON.parse(items);
 }
+
 document.querySelector("form").addEventListener("submit", function (e) {
   e.preventDefault();
   let item = document.getElementById("item").value;
   let price = document.getElementById("price").value;
   let quantity = document.getElementById("quantity").value;
 
+  // validation
   if (item.trim() == "") {
     document.getElementById("item").focus();
-    return;
+    return false;
   }
   if (price.trim() == "") {
     document.getElementById("price").focus();
-    return;
+    return false;
   }
   if (quantity.trim() == "") {
     document.getElementById("quantity").focus();
-    return;
+    return false;
   }
-  document.querySelector("form").reset();
-  document.getElementById("item").focus();
 
+  // clear form
+  document.querySelector("form").reset();
+
+  // create object
   let record = {
     item,
     price,
     quantity,
   };
-  //push to array
-  // records.push(record);
 
-  //using unshift
-  records.unshift(record);
+  // search if item already exists
+  let found = records.find(function (r) {
+    return r.item == item;
+  });
 
-  displayRecords();
-  // ------------------------------
-  let foundItem = items.find(function(record){
-    return record.item == item;
-  })
-
-  // check it is found or not
-  let foundItem = items.find(function(record){
-    return record.item.toLowerCase() == item.toLowerCase();
-  })
-
-  // if it is not found, object push to the "items" array.
-  if(!foundItem){
-    items.push({item,price});
-    localStorage.setItem("items", JSON.stringify(items));
+  if (found) {
+    if (found.price == price) {
+      found.quantity = parseFloat(found.quantity) + parseFloat(quantity);
+      displayRecords();
+      return false;
+    }
   }
-  else if (parseFloat(foundItem.price) != parseFloat(price)){
-    items.forEach(function(record){
-      if(record.item.toLowerCase() == item.toLowerCase()){
-        record.price = print;
-        localStorage.setItem("items", JSON.stringify(item))
+
+  // using unshift to add to the top of the list
+  records.unshift(record);
+  displayRecords();
+
+  // -------------------------
+  // Update LocalStorage Memory
+  let foundItem = items.find(function (record) {
+    return record.item.toLowerCase() == item.toLowerCase();
+  });
+
+  if (!foundItem) {
+    items.push({ item, price });
+    localStorage.setItem("items", JSON.stringify(items));
+  } else if (parseFloat(foundItem.price) != parseFloat(price)) {
+    items.forEach(function (record) {
+      if (record.item.toLowerCase() == item.toLowerCase()) {
+        record.price = price;
+        localStorage.setItem("items", JSON.stringify(items));
       }
-    })
+    });
   }
 });
 
@@ -76,12 +84,15 @@ function displayRecords() {
     tr.querySelector(".qty").textContent = record.quantity;
     tr.querySelector(".total").textContent = record.quantity * record.price;
     tr.querySelector(".count").textContent = index + 1;
+
     tr.querySelector(".delete").onclick = function () {
-      if (confirm("Are you sure?")) {
-        records.splice(index, 1);
-        displayRecords();
+      if (!confirm("Are you sure?")) {
+        return false;
       }
+      records.splice(index, 1);
+      displayRecords();
     };
+
     tr.querySelector(".edit").onclick = function () {
       document.getElementById("item").value = record.item;
       document.getElementById("price").value = record.price;
@@ -89,6 +100,7 @@ function displayRecords() {
       records.splice(index, 1);
       displayRecords();
     };
+
     tbody.appendChild(tr);
     total += record.quantity * record.price;
   });
@@ -96,64 +108,122 @@ function displayRecords() {
   document.getElementById("itemTypes").textContent = records.length;
 }
 
-//sort by name
+// sort by name
 document.getElementById("sortByName").onclick = () => {
   records.sort(function (a, b) {
-    if (a.item < b.item) {
-      return -1;
-    } else if (a.item > b.item) {
-      return 1;
-    } else {
-      return 0;
-    }
+    if (a.item < b.item) return -1;
+    else if (a.item > b.item) return 1;
+    else return 0;
   });
   displayRecords();
 };
 
-//sort by rate
+// sort by rate
 document.getElementById("sortByRate").onclick = () => {
   records.sort(function (a, b) {
-    a.price = parseFloat(a.price);
-    b.price = parseFloat(b.price);
-    return a.price - b.price;
+    return parseFloat(a.price) - parseFloat(b.price);
   });
   displayRecords();
 };
 
-//sort by qty
+// sort by qty
 document.getElementById("sortByQuantity").onclick = () => {
   records.sort(function (a, b) {
-    a.quantity = parseFloat(a.quantity);
-    b.quantity = parseFloat(b.quantity);
-    return a.quantity - b.quantity;
+    return parseFloat(a.quantity) - parseFloat(b.quantity);
   });
   displayRecords();
 };
 
-//sort by total
+// sort by total
 document.getElementById("sortByTotal").onclick = () => {
   records.sort(function (a, b) {
-    a.total = parseFloat(a.quantity) * parseFloat(a.price);
-    b.total = parseFloat(b.quantity) * parseFloat(b.price);
-    return a.total - b.total;
+    let totalA = parseFloat(a.quantity) * parseFloat(a.price);
+    let totalB = parseFloat(b.quantity) * parseFloat(b.price);
+    return totalA - totalB;
   });
   displayRecords();
 };
-//reverse
+
+// reverse
 document.getElementById("reverse").onclick = () => {
   records.reverse();
   displayRecords();
 };
 
-//print
+// print
 document.getElementById("printBtn").onclick = () => {
   window.print();
 };
 
-//clear
+// clear
 document.getElementById("clearBtn").onclick = () => {
-  if (confirm("Are your sure ?")) {
-    records = [];
-    displayRecords();
+  if (!confirm("Are you sure?")) {
+    return false;
   }
+  records = [];
+  displayRecords();
 };
+
+// ------------------------
+// Auto-suggestions logic
+const input = document.getElementById("item");
+const suggestions = document.getElementById("suggestions");
+
+input.addEventListener("keyup", function (event) {
+  let val = input.value;
+  if (val.trim() == "") {
+    suggestions.innerHTML = "";
+    return;
+  }
+
+  if (event.key == "ArrowDown" || event.key == "ArrowUp") {
+    let selected = document.querySelector("#suggestions li.selected");
+
+    if (selected) {
+      if (event.key == "ArrowDown") {
+        if (selected.nextElementSibling) {
+          selected.nextElementSibling.classList.add("selected");
+          selected.classList.remove("selected");
+        }
+      } else {
+        if (selected.previousElementSibling) {
+          selected.previousElementSibling.classList.add("selected");
+          selected.classList.remove("selected");
+        }
+      }
+    } else {
+      if (event.key == "ArrowDown") {
+        let firstItem = document.querySelector("#suggestions li");
+        if (firstItem) firstItem.classList.add("selected");
+      }
+    }
+    return;
+  }
+
+  let res = items.filter(function (record) {
+    return record.item.toLowerCase().includes(val.toLowerCase());
+  });
+
+  suggestions.innerHTML = "";
+  res.forEach(function (suggestion) {
+    let li = document.createElement("li");
+    li.textContent = suggestion.item;
+    li.onclick = function () {
+      input.value = suggestion.item;
+      document.getElementById("price").value = suggestion.price;
+      document.getElementById("price").focus();
+      suggestions.innerHTML = "";
+    };
+    suggestions.appendChild(li);
+  });
+});
+
+input.addEventListener("keydown", function (event) {
+  if (event.key == "Enter") {
+    let selected = document.querySelector("#suggestions li.selected");
+    if (selected) {
+      selected.click();
+      event.preventDefault(); // Prevents form submission when picking a suggestion
+    }
+  }
+});

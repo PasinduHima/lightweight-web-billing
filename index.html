@@ -1,130 +1,173 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Billing System</title>
-    <script src="script.js" defer></script>
     <style>
-        label{
-            display: inline-block;
-            width: 100px;
-        }  
+      label {
+        display: inline-block;
+        width: 100px;
+      }
 
-        table{
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 10px;
-        }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 10px;
+      }
 
-        form input{
-            width: 280px;
-            margin-top: 10px;
-            padding: 5px;
-        }
+      form input {
+        width: 280px;
+        margin-top: 10px;
+        padding: 5px;
+      }
 
-        form input[type="submit"]{
-            margin-left: 110px;
-            margin-top: 10px;
-            padding: 5px;
-            background-color: green;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        table, th, td{
-            border: 1px solid black;
-        }
+      form input[type="submit"] {
+        margin-left: 110px;
+        margin-top: 10px;
+        padding: 5px;
+        background-color: green;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
 
-        body{
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: aquamarine;;
-        }
-        h1{
-            text-align: center;
-            color: red;
-        }
-        .act-btn{
-            margin: 20px;
-            padding: 5px;
-            background-color: green;
-            color: white;
-        }
-        .delete{
-            background-color: red;
-            color: white;
-            border-radius: 50%;
-        }
-        
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: aquamarine;
+      }
+
+      h1 {
+        text-align: center;
+        color: red;
+      }
+
+      .delete {
+        background-color: red;
+        border-radius: 50%;
+        color: white;
+      }
+
+      .grandTotal {
+        font-weight: bold;
+      }
+
+      .action-btn {
+        margin-top: 10px;
+        padding: 6px;
+        background-color: red;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* ---------------------- */
+      /* suggestions */
+      #suggestions {
+        position: absolute;
+        width: 290px;
+        top: 25px;
+        left: 106px;
+        background-color: azure;
+        z-index: 1;
+        padding: 0;
+      }
+
+      #suggestions li {
+        list-style: none;
+        padding: 5px;
+        border-bottom: 1px solid rgb(102, 102, 180);
+        cursor: pointer;
+      }
+
+      #suggestions li:hover {
+        background-color: aqua;
+      }
+
+      #suggestions li.selected {
+        background-color: aqua;
+      }
     </style>
-    
-</head>
-<body>
-    <h1>Billing System</h1>
-    <form action="index.php" method="post">
-        <label for="item">Item</label>
-        <input type="text" name="item" id="item">
-        <br>
-        <label for="price">Price</label>
-        <input type="number" name="price" id="price">
-        <br>
-        <label for="quantity">Quantity</label>
-        <input type="number" name="quantity" id="quantity">
-        <br>
-        <input type="submit" value="Add">
-    </form>
-    <Table>
-        <thead>
-            <tr>
-                <th>#
-                    <button id="reverse">↕</button>
-                </th>
-                <th>
-                    Item 
-                    <button id="sortByName">↓</button>
-                </th>
-                <th>
-                    Rate
-                    <button id="sortByRate">↓</button>
-                </th>
-                <th>
-                    Quantity
-                    <button id="sortByQuantity">↓</button>
-                </th>
-                <th>
-                    Total
-                    <button id="sortByTotal">↓</button>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
+  </head>
 
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3">Number of item types: <span id="itemTypes"></span> </td>
-                <td>Total</td>
-                <td class="grandTotal"></td>
-            </tr>
-        </tfoot>
-    </Table>
-    <template>
+  <body>
+    <h1>Billing System</h1>
+    <form>
+      <div style="position: relative">
+        <label for="item">Item</label>
+        <input type="text" name="item" id="item" autocomplete="off" />
+        <ul id="suggestions"></ul>
+      </div>
+      <br />
+      <label for="price">Price</label>
+      <input type="number" name="price" id="price" />
+      <br />
+      <label for="quantity">Quantity</label>
+      <input type="number" name="quantity" id="quantity" />
+      <br />
+      <input type="submit" value="Add" />
+    </form>
+
+    <table>
+      <thead>
         <tr>
-            <td >
-                <span class="count"></span>
-                <button class="delete">X</button>
-                <button class="edit">Edit</button>
-            </td>
-            <td class="name"></td>
-            <td class="rate"></td>
-            <td class="qty"></td>
-            <td class="total"></td>
+          <th>
+            #
+            <button type="button" id="reverse">↓</button>
+          </th>
+          <th>
+            Item
+            <button type="button" id="sortByName">↓</button>
+          </th>
+          <th>
+            Rate
+            <button type="button" id="sortByRate">↓</button>
+          </th>
+          <th>
+            Quantity
+            <button type="button" id="sortByQuantity">↓</button>
+          </th>
+          <th>
+            Total
+            <button type="button" id="sortByTotal">↓</button>
+          </th>
         </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">
+            Number of item types: <span id="itemTypes">0</span>
+          </td>
+          <td>Total</td>
+          <td class="grandTotal">0</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <template>
+      <tr>
+        <td>
+          <span class="count"></span>
+          <button type="button" class="delete">X</button>
+          <button type="button" class="edit">Edit</button>
+        </td>
+        <td class="name"></td>
+        <td class="rate"></td>
+        <td class="qty"></td>
+        <td class="total"></td>
+      </tr>
     </template>
-    <button id="printBtn" class="act-btn">Print</button>
-    <button id="clearBtn" class="act-btn">Clear</button>
-   
-    
-</body>
+
+    <button type="button" id="printBtn" class="action-btn">Print</button>
+    <button type="button" id="clearBtn" class="action-btn">Clear</button>
+
+    <script src="script.js"></script>
+  </body>
 </html>
