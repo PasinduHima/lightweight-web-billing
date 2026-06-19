@@ -39,6 +39,10 @@ document.querySelector("form").addEventListener("submit", function (e) {
   records.unshift(record);
 
   displayRecords();
+  // ------------------------------
+  let foundItem = items.find(function(record){
+    return record.item == item;
+  })
 
   // check it is found or not
   let foundItem = items.find(function(record){
@@ -49,6 +53,14 @@ document.querySelector("form").addEventListener("submit", function (e) {
   if(!foundItem){
     items.push({item,price});
     localStorage.setItem("items", JSON.stringify(items));
+  }
+  else if (parseFloat(foundItem.price) != parseFloat(price)){
+    items.forEach(function(record){
+      if(record.item.toLowerCase() == item.toLowerCase()){
+        record.price = print;
+        localStorage.setItem("items", JSON.stringify(item))
+      }
+    })
   }
 });
 
