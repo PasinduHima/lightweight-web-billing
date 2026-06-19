@@ -1,4 +1,11 @@
 let records = [];
+let items = localStorage.getItem('items');
+if (!items) {
+  items = [];
+  }
+else{
+  items = JSON.parse(items);
+}
 document.querySelector("form").addEventListener("submit", function (e) {
   e.preventDefault();
   let item = document.getElementById("item").value;
@@ -32,6 +39,17 @@ document.querySelector("form").addEventListener("submit", function (e) {
   records.unshift(record);
 
   displayRecords();
+
+  // check it is found or not
+  let foundItem = items.find(function(record){
+    return record.item.toLowerCase() == item.toLowerCase();
+  })
+
+  // if it is not found, object push to the "items" array.
+  if(!foundItem){
+    items.push({item,price});
+    localStorage.setItem("items", JSON.stringify(items));
+  }
 });
 
 function displayRecords() {
